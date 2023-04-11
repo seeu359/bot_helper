@@ -2,10 +2,11 @@ from aiogram import Dispatcher, types
 from aiogram.dispatcher import FSMContext
 from aiogram.types import ReplyKeyboardRemove
 
+import src.bot.events.task
+from src.bot.events import task as task_events
 from src.bot import bot
 from src.bot.keybords.task import get_action, get_month, get_task_period
 from src.domain import bussines_rules, models
-from src.domain.events import task_events
 from src.service import formatters
 from src.service import uow as _uow
 

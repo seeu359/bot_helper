@@ -6,3 +6,6 @@ sort:
 
 run:
 	poetry run bot
+
+test:
+	poetry run pytest

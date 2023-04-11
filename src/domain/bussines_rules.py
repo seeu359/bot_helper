@@ -22,13 +22,13 @@ MONTH_MAPPER = {
 
 
 def format_day(day: int, month: str):
-    check_day(day, month)
-    day = normalize_day(day)
+    _check_day(day, month)
+    day = _normalize_day(day)
     month = MONTH_MAPPER[month][0]
     return f'{YEAR}-{month}-{day}'
 
 
-def check_day(day: int, month: str) -> None:
+def _check_day(day: int, month: str) -> None:
     exception = exceptions.InvalidDate
     max_day_in_month = MONTH_MAPPER[month][1]
     if day <= 0:
@@ -43,7 +43,9 @@ def check_day(day: int, month: str) -> None:
         )
 
 
-def normalize_day(day: int):
+def _normalize_day(day: int) -> str:
     if len(str(day)) == 1:
         return f'0{day}'
-    return day
+    return str(day)
+
+
