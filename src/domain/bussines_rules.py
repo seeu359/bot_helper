@@ -47,5 +47,3 @@ def _normalize_day(day: int) -> str:
     if len(str(day)) == 1:
         return f'0{day}'
     return str(day)
-
-

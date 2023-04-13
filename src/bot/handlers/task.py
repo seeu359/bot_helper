@@ -2,12 +2,11 @@ from aiogram import Dispatcher, types
 from aiogram.dispatcher import FSMContext
 from aiogram.types import ReplyKeyboardRemove
 
-import src.bot.events.task
 from src.bot.events import task as task_events
 from src.bot import bot
-from src.bot.keybords.task import get_action, get_month, get_task_period
-from src.domain import bussines_rules, models
 from src.service import formatters
+from src.bot.keybords.task import get_action, get_month, get_task_period, get_inline_for_tasks, task_cb_data
+from src.domain import bussines_rules, models
 from src.service import uow as _uow
 
 
@@ -96,16 +95,26 @@ async def get_tasks(message: types.Message, state: FSMContext):
                 models.Task, user_id=message.from_user.id, period=period
             )
 
-    formatter = formatters.TaskFormatter()
-    output = formatter.format_all(_tasks)
-
-    if len(output) == 0:
-        output = 'You\'re have no tasks'
+    output = 'You\'re have no tasks' if len(_tasks) == 0 else 'Your Task'
     await state.finish()
-    await bot.send_message(message.from_user.id, text=output)
+    await message.answer(
+        text=output, reply_markup=get_inline_for_tasks(_tasks)
+    )
+
+
+async def get_task_info(query: types.CallbackQuery, callback_data: dict):
+    task_id = callback_data.get('task_id')
+    uow = _uow.DatabaseService()
+    with uow:
+        task = uow.item.get(models.Task, entity_id=int(task_id))
+    formatter = formatters.TaskFormatter()
+    await bot.send_message(query.from_user.id, formatter.format(task))
 
 
 def register_handlers(dp: Dispatcher):
+    dp.register_callback_query_handler(
+        get_task_info, task_cb_data.filter()
+    )
     dp.register_callback_query_handler(
         get_sample_type, lambda call: call.data == 'get'
     )

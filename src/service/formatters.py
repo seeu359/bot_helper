@@ -41,5 +41,7 @@ class TaskFormatter(Presenter):
             result += f'{index + 1}) {self.format_date(task.start_date)} - {task.title}\n'
         return result
 
-    def _format(self, tasks: models.Task):
-        return tasks
+    def _format(self, task: models.Task):
+        return f'Start time: {self.format_date(task.start_date)}\n' \
+               f'Title: {task.title}' \
+               f'\nDescription: {task.description}'

@@ -2,7 +2,7 @@ from aiogram import Dispatcher, types
 
 
 async def get_info(message: types.Message):
-    await message.answer('HIIII')
+    await message.reply('Info message handler')
 
 
 def register_handlers(dp: Dispatcher):

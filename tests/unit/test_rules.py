@@ -14,11 +14,11 @@ def test_incorrect_month_day():
 
 
 @pytest.mark.parametrize('value, expected',
-                        [
+                         [
                             (1, '01'),
                             (25, '25'),
                             (9, '09'),
                             (10, '10'),
-                        ])
+                         ])
 def test_normalize_day(value, expected):
     assert bussines_rules._normalize_day(value) == expected

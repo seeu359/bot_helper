@@ -1,11 +1,14 @@
 from dataclasses import dataclass
 from datetime import date
+from typing import Any
+
+EntityProperties = Any
 
 
 class Entity:
-    id: int | None
-    user_id: int | None
-    start_date: int | None
+    id: EntityProperties
+    user_id: EntityProperties
+    start_date: EntityProperties
 
     @classmethod
     def _get_cls_name(cls):

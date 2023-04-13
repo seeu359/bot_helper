@@ -10,3 +10,4 @@ class AddTask(StatesGroup):
 
 class GetTasks(StatesGroup):
     period = State()
+    get_task = State()
