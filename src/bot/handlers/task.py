@@ -5,9 +5,17 @@ from aiogram.types import ReplyKeyboardRemove
 from src.bot.events import task as task_events
 from src.bot import bot
 from src.service import formatters
-from src.bot.keybords.task import get_action, get_month, get_task_period, get_inline_for_tasks, task_cb_data
-from src.domain import bussines_rules, models
+from src.domain import bussines_rules, models, commands
 from src.service import uow as _uow
+from src.bot.keybords.task import (
+    get_action,
+    get_month,
+    get_task_period,
+    get_inline_for_tasks,
+    task_cb_data,
+    task_done_cb_data,
+    inline_done_for_task,
+)
 
 
 async def tasks(message: types.Message):
@@ -106,14 +114,29 @@ async def get_task_info(query: types.CallbackQuery, callback_data: dict):
     task_id = callback_data.get('task_id')
     uow = _uow.DatabaseService()
     with uow:
-        task = uow.item.get(models.Task, entity_id=int(task_id))
+        task = uow.item.get(models.Task, entity_id=task_id)
     formatter = formatters.TaskFormatter()
-    await bot.send_message(query.from_user.id, formatter.format(task))
+    await bot.send_message(query.from_user.id, formatter.format(task), reply_markup=inline_done_for_task(task_id))
+
+
+async def done_task(query: types.CallbackQuery, callback_data: dict):
+    task_id = callback_data.get('task_id')
+    uow = _uow.DatabaseService()
+    with uow:
+        task = uow.item.get(models.Task, task_id)
+        done_task = models.DoneTask(**task.to_dict())
+        uow.item.done(done_task)
+        uow.item.delete(task)
+        uow.commit()
+    await bot.send_message(query.from_user.id, f'Task has been done')
 
 
 def register_handlers(dp: Dispatcher):
     dp.register_callback_query_handler(
         get_task_info, task_cb_data.filter()
+    )
+    dp.register_callback_query_handler(
+        done_task, task_done_cb_data.filter()
     )
     dp.register_callback_query_handler(
         get_sample_type, lambda call: call.data == 'get'

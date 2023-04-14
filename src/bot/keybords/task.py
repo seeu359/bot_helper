@@ -46,19 +46,28 @@ def get_task_period() -> ReplyKeyboardMarkup:
 
 
 task_cb_data = CallbackData('tcd', 'task_id')
+task_done_cb_data = CallbackData('dcb', 'task_id')
 
 
 def get_inline_for_tasks(tasks) -> InlineKeyboardMarkup:
     buttons = list()
     for index, task in enumerate(tasks):
-        task_id = task.id
         text = f'{index + 1}) {task.start_date}, {task.title}'
         buttons.append(
             InlineKeyboardButton(
-                text=text, callback_data=task_cb_data.new(task_id=task_id)
+                text=text, callback_data=task_cb_data.new(task_id=task.id)
             )
         )
     keyboard = InlineKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
     for button in buttons:
         keyboard.add(button)
+    return keyboard
+
+
+def inline_done_for_task(task_id):
+    done_button = InlineKeyboardButton(
+        text='Press to done task', callback_data=task_done_cb_data.new(task_id=task_id)
+    )
+    keyboard = InlineKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
+    keyboard.add(done_button)
     return keyboard

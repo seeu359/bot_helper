@@ -1,14 +1,13 @@
 from dataclasses import dataclass
-from datetime import date
+from datetime import date, datetime
 from typing import Any
+from abc import ABC
 
 EntityProperties = Any
 
 
-class Entity:
+class Entity(ABC):
     id: EntityProperties
-    user_id: EntityProperties
-    start_date: EntityProperties
 
     @classmethod
     def _get_cls_name(cls):
@@ -21,7 +20,7 @@ class Entity:
 
 @dataclass
 class Task(Entity):
-    start_date: date
+    start_date: int
     title: str
     description: str
     user_id: int
@@ -33,6 +32,26 @@ class Task(Entity):
                 return date.today()
             case _:
                 return
+
+    def to_dict(self):
+        return {
+            'start_date': self.start_date,
+            'title': self.title,
+            'description': self.description,
+            'user_id': self.user_id
+        }
+
+    def __repr__(self):
+        return super().__repr__()
+
+
+@dataclass
+class DoneTask(Task):
+    completion_date = datetime.now()
+
+    def to_dict(self):
+        fields = super().to_dict()
+        fields['completion_date'] = self.completion_date
 
     def __repr__(self):
         return super().__repr__()
