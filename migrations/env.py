@@ -15,7 +15,7 @@ db_cred = _config.get_db_credentials()
 section = config.config_ini_section
 config.set_section_option(section, 'POSTGRES_HOST', db_cred.host)
 config.set_section_option(section, 'POSTGRES_PORT', db_cred.port)
-config.set_section_option(section, 'POSTGRES_NAME', db_cred.db_name)
+config.set_section_option(section, 'POSTGRES_DB', db_cred.db_name)
 config.set_section_option(section, 'POSTGRES_PASSWORD', db_cred.password)
 config.set_section_option(section, 'POSTGRES_USER', db_cred.user)
 

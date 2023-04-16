@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from datetime import date, datetime
 from typing import Any
-from abc import ABC
+from abc import ABC, abstractmethod
 
 EntityProperties = Any
 
@@ -12,6 +12,13 @@ class Entity(ABC):
     @classmethod
     def _get_cls_name(cls):
         return cls.__name__
+
+    def to_dict(self):
+        return self._to_dict()
+
+    @abstractmethod
+    def _to_dict(self):
+        raise NotImplementedError
 
     def __repr__(self):
         fields = [f'{items[0]}={items[1]}' for items in self.__dict__.items()]
@@ -33,7 +40,7 @@ class Task(Entity):
             case _:
                 return
 
-    def to_dict(self):
+    def _to_dict(self):
         return {
             'start_date': self.start_date,
             'title': self.title,
@@ -49,8 +56,8 @@ class Task(Entity):
 class DoneTask(Task):
     completion_date = datetime.now()
 
-    def to_dict(self):
-        fields = super().to_dict()
+    def _to_dict(self):
+        fields = super()._to_dict()
         fields['completion_date'] = self.completion_date
 
     def __repr__(self):
@@ -64,3 +71,6 @@ class User(Entity):
         self.username = username
         self.first_name = first_name
         self.last_name = last_name
+
+    def _to_dict(self):
+        pass

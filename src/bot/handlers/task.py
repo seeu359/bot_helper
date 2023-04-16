@@ -124,11 +124,11 @@ async def done_task(query: types.CallbackQuery, callback_data: dict):
     uow = _uow.DatabaseService()
     with uow:
         task = uow.item.get(models.Task, task_id)
-        done_task = models.DoneTask(**task.to_dict())
-        uow.item.done(done_task)
+        d_task = models.DoneTask(**task.to_dict())
+        uow.item.done(d_task)
         uow.item.delete(task)
         uow.commit()
-    await bot.send_message(query.from_user.id, f'Task has been done')
+    await bot.send_message(query.from_user.id, 'Task has been done')
 
 
 def register_handlers(dp: Dispatcher):

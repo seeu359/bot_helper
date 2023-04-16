@@ -1,8 +1,8 @@
-"""Add tables
+"""empty message
 
-Revision ID: c9dd1c2fd839
+Revision ID: da8fb5aa1247
 Revises: 
-Create Date: 2023-04-14 15:38:47.412401
+Create Date: 2023-04-16 20:01:05.136379
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'c9dd1c2fd839'
+revision = 'da8fb5aa1247'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -27,7 +27,7 @@ def upgrade() -> None:
     )
     op.create_table('done_task',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('task_id', sa.Integer(), nullable=True),
+    sa.Column('start_date', sa.Date(), nullable=True),
     sa.Column('completion_date', sa.DateTime(), nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=True),
     sa.Column('title', sa.String(), nullable=False),

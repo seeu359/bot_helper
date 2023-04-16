@@ -20,7 +20,7 @@ class DBCreds(NamedTuple):
 
 
 def get_database_url():
-    prefix = 'postgresql://'
+    prefix = 'postgresql+psycopg2://'
     creds = get_db_credentials()
     return f'{prefix}{creds.user}:{creds.password}@' \
            f'{creds.host}:{creds.port}/{creds.db_name}'
@@ -32,7 +32,7 @@ def get_db_credentials() -> DBCreds:
         password=os.getenv('POSTGRES_PASSWORD'),
         host=os.getenv('POSTGRES_HOST'),
         port=os.getenv('POSTGRES_PORT'),
-        db_name=os.getenv('POSTGRES_NAME')
+        db_name=os.getenv('POSTGRES_DB')
     )
 
 

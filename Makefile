@@ -9,3 +9,10 @@ run:
 
 test:
 	poetry run pytest
+
+build:
+	docker-compose up -d --build
+
+migration:
+	docker exec helper_bot alembic revision --autogenerate
+	docker exec helper_bot alembic upgrade head
