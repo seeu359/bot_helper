@@ -4,8 +4,8 @@ from aiogram.utils.callback_data import CallbackData
 
 
 def get_action() -> InlineKeyboardMarkup:
-    add_button = InlineKeyboardButton(text='Add Task', callback_data='add')
-    get_button = InlineKeyboardMarkup(text='Get tasks', callback_data='get')
+    add_button = InlineKeyboardButton(text='Add Task', callback_data='add task')
+    get_button = InlineKeyboardMarkup(text='Get tasks', callback_data='get tasks')
     keyboard = InlineKeyboardMarkup(
         resize_keyboard=True, one_time_keyboard=True
     )

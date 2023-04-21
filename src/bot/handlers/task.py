@@ -1,11 +1,12 @@
 from aiogram import Dispatcher, types
 from aiogram.dispatcher import FSMContext
 from aiogram.types import ReplyKeyboardRemove
+from dataclasses import asdict
 
 from src.bot.events import task as task_events
 from src.bot import bot
 from src.service import formatters
-from src.domain import bussines_rules, models, commands
+from src.domain import bussines_rules, models
 from src.service import uow as _uow
 from src.bot.keybords.task import (
     get_action,
@@ -124,7 +125,7 @@ async def done_task(query: types.CallbackQuery, callback_data: dict):
     uow = _uow.DatabaseService()
     with uow:
         task = uow.item.get(models.Task, task_id)
-        d_task = models.DoneTask(**task.to_dict())
+        d_task = models.DoneTask(**asdict(task))
         uow.item.done(d_task)
         uow.item.delete(task)
         uow.commit()
@@ -139,15 +140,15 @@ def register_handlers(dp: Dispatcher):
         done_task, task_done_cb_data.filter()
     )
     dp.register_callback_query_handler(
-        get_sample_type, lambda call: call.data == 'get'
+        get_sample_type, lambda call: call.data == 'get tasks'
+    )
+    dp.register_callback_query_handler(
+        select_title, lambda call: call.data == 'add task', state=None
     )
     dp.register_message_handler(
         get_tasks, state=task_events.GetTasks.period
     )
     dp.register_message_handler(tasks, commands='tasks', state=None)
-    dp.register_callback_query_handler(
-        select_title, lambda call: call.data == 'add', state=None
-    )
     dp.register_message_handler(
         select_description, state=task_events.AddTask.title
     )
