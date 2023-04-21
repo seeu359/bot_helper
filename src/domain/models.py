@@ -20,7 +20,7 @@ class Entity(ABC):
 
 @dataclass
 class Task(Entity):
-    start_date: int
+    start_date: date
     title: str
     description: str
     user_id: int
@@ -39,7 +39,7 @@ class Task(Entity):
 
 @dataclass
 class DoneTask(Task):
-    completion_date = datetime.now()
+    completion_date: datetime = datetime.now()
 
     def __repr__(self):
         return super().__repr__()
@@ -52,3 +52,15 @@ class User(Entity):
         self.username = username
         self.first_name = first_name
         self.last_name = last_name
+
+
+@dataclass
+class Note(Entity):
+    title: str
+    description: str
+    category_id: int
+    user_id: int
+
+
+class NoteCategory(Entity):
+    name: str

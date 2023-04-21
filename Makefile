@@ -13,6 +13,9 @@ test:
 build:
 	docker-compose up -d --build
 
+up:
+	docker compose up
+
 migration:
 	docker exec helper_bot alembic revision --autogenerate
 	docker exec helper_bot alembic upgrade head

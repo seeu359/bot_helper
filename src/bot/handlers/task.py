@@ -1,6 +1,7 @@
 from aiogram import Dispatcher, types
 from aiogram.dispatcher import FSMContext
 from aiogram.types import ReplyKeyboardRemove
+from aiogram.dispatcher.filters import Text
 from dataclasses import asdict
 
 from src.bot.events import task as task_events
@@ -21,6 +22,15 @@ from src.bot.keybords.task import (
 
 async def tasks(message: types.Message):
     await message.reply('Choose your action:', reply_markup=get_action())
+
+
+async def cancel(message: types.Message, state: FSMContext):
+    current_state = await state.get_state()
+    if current_state is None:
+        return
+
+    await state.finish()
+    await message.reply('All action is canceled', reply_markup=types.ReplyKeyboardRemove())
 
 
 async def select_title(query: types.CallbackQuery):
@@ -145,10 +155,12 @@ def register_handlers(dp: Dispatcher):
     dp.register_callback_query_handler(
         select_title, lambda call: call.data == 'add task', state=None
     )
+    dp.register_message_handler(cancel, state="*", commands="cancel")
+    dp.register_message_handler(cancel, Text(equals='cancel', ignore_case=True), state='*')
+    dp.register_message_handler(tasks, commands='tasks', state=None)
     dp.register_message_handler(
         get_tasks, state=task_events.GetTasks.period
     )
-    dp.register_message_handler(tasks, commands='tasks', state=None)
     dp.register_message_handler(
         select_description, state=task_events.AddTask.title
     )

@@ -16,3 +16,4 @@ async def notes(message: types.Message):
 
 def register_handlers(dp: Dispatcher):
     dp.register_message_handler(notes, commands='notes')
+
