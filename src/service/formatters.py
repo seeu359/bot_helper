@@ -45,3 +45,13 @@ class TaskFormatter(Presenter):
         return f'Start time: {self.format_date(task.start_date)}\n' \
                f'Title: {task.title}' \
                f'\nDescription: {task.description}'
+
+
+class NoteFormatter(Presenter):
+
+    def _format_all(self, objects: Iterable[models.Entity]):
+        pass
+
+    def _format(self, note: models.Note):
+        return f'Title: {note.title}\n' \
+               f'Description: {note.description}'

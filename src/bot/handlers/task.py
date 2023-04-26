@@ -3,6 +3,7 @@ from aiogram.dispatcher import FSMContext
 from aiogram.types import ReplyKeyboardRemove
 from aiogram.dispatcher.filters import Text
 from dataclasses import asdict
+from loguru import logger
 
 from src.bot.events import task as task_events
 from src.bot import bot
@@ -34,30 +35,34 @@ async def cancel(message: types.Message, state: FSMContext):
 
 
 async def select_title(query: types.CallbackQuery):
+    await query.message.delete()
     await bot.send_message(query.from_user.id, text='Select task title')
     await task_events.AddTask.title.set()
 
 
 async def select_description(message: types.Message, state: FSMContext):
-
+    await message.delete()
     await state.update_data(title=message.text)
     await message.answer('Type task description')
     await task_events.AddTask.next()
 
 
 async def select_months_day(message: types.Message, state: FSMContext):
+    await message.delete()
     await state.update_data(description=message.text)
     await message.answer('Enter the day of the month as a regular number')
     await task_events.AddTask.next()
 
 
 async def select_month(message: types.Message, state: FSMContext):
+    await message.delete()
     await state.update_data(month_day=message.text)
     await message.answer('Select month', reply_markup=get_month())
     await task_events.AddTask.next()
 
 
 async def add_task(message: types.Message, state: FSMContext):
+    await message.delete()
     await state.update_data(month=message.text)
     data = await state.get_data()
     data['user_id'] = message.from_user.id
@@ -90,6 +95,7 @@ async def add_task(message: types.Message, state: FSMContext):
 
 
 async def get_sample_type(query: types.CallbackQuery):
+    await query.message.delete()
     await bot.send_message(
         query.from_user.id,
         text='What task to display?',
@@ -104,12 +110,14 @@ async def get_tasks(message: types.Message, state: FSMContext):
     uow = _uow.DatabaseService()
 
     period = models.Task.get_period(data.get('period'))
+
     with uow:
         if period is None:
             _tasks = uow.item.get_list(
                 models.Task, user_id=message.from_user.id
             )
         else:
+            logger.info(f'Get task for date {period.day}')
             _tasks = uow.item.get_list(
                 models.Task, user_id=message.from_user.id, period=period
             )
@@ -122,15 +130,19 @@ async def get_tasks(message: types.Message, state: FSMContext):
 
 
 async def get_task_info(query: types.CallbackQuery, callback_data: dict):
+    await query.message.delete()
     task_id = callback_data.get('task_id')
     uow = _uow.DatabaseService()
     with uow:
         task = uow.item.get(models.Task, entity_id=task_id)
     formatter = formatters.TaskFormatter()
-    await bot.send_message(query.from_user.id, formatter.format(task), reply_markup=inline_done_for_task(task_id))
+    await bot.send_message(
+        query.from_user.id, formatter.format(task), reply_markup=inline_done_for_task(task_id)
+    )
 
 
 async def done_task(query: types.CallbackQuery, callback_data: dict):
+    await query.message.delete()
     task_id = callback_data.get('task_id')
     uow = _uow.DatabaseService()
     with uow:
@@ -144,12 +156,6 @@ async def done_task(query: types.CallbackQuery, callback_data: dict):
 
 def register_handlers(dp: Dispatcher):
     dp.register_callback_query_handler(
-        get_task_info, task_cb_data.filter()
-    )
-    dp.register_callback_query_handler(
-        done_task, task_done_cb_data.filter()
-    )
-    dp.register_callback_query_handler(
         get_sample_type, lambda call: call.data == 'get tasks'
     )
     dp.register_callback_query_handler(
@@ -158,6 +164,14 @@ def register_handlers(dp: Dispatcher):
     dp.register_message_handler(cancel, state="*", commands="cancel")
     dp.register_message_handler(cancel, Text(equals='cancel', ignore_case=True), state='*')
     dp.register_message_handler(tasks, commands='tasks', state=None)
+
+    dp.register_callback_query_handler(
+        get_task_info, task_cb_data.filter()
+    )
+    dp.register_callback_query_handler(
+        done_task, task_done_cb_data.filter()
+    )
+
     dp.register_message_handler(
         get_tasks, state=task_events.GetTasks.period
     )

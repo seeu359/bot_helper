@@ -46,6 +46,7 @@ note_category = Table(
     'note_category',
     metadata,
     Column('id', Integer, primary_key=True, autoincrement=True),
+    Column('user_id', ForeignKey('user.id')),
     Column('name', String, nullable=False),
 )
 
@@ -62,7 +63,11 @@ note = Table(
 
 def start_mapping():
     user_mapper = mapper.map_imperatively(models.User, user)
-    note_category_mapper = mapper.map_imperatively(models.NoteCategory, note_category)
+    note_category_mapper = mapper.map_imperatively(
+        models.NoteCategory, note_category, properties={
+            'user': relationship(user_mapper)
+        }
+    )
     mapper.map_imperatively(models.DoneTask, done_task, properties={
         'user': relationship(user_mapper)
     })

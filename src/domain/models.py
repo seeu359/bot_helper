@@ -33,6 +33,9 @@ class Task(Entity):
             case _:
                 return
 
+    def is_expired(self, exp_date: date):
+        return exp_date > self.start_date
+
     def __repr__(self):
         return super().__repr__()
 
@@ -45,13 +48,12 @@ class DoneTask(Task):
         return super().__repr__()
 
 
+@dataclass
 class User(Entity):
-
-    def __init__(self, id=None, username=None, first_name=None, last_name=None):
-        self.id = id
-        self.username = username
-        self.first_name = first_name
-        self.last_name = last_name
+    username: str
+    first_name: str
+    last_name: str
+    id: int | None = None
 
 
 @dataclass
@@ -62,5 +64,7 @@ class Note(Entity):
     user_id: int
 
 
+@dataclass
 class NoteCategory(Entity):
+    user_id: int
     name: str
