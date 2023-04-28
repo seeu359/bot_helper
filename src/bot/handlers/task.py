@@ -132,21 +132,24 @@ async def get_tasks(message: types.Message, state: FSMContext):
 async def get_task_info(query: types.CallbackQuery, callback_data: dict):
     await query.message.delete()
     task_id = callback_data.get('task_id')
+    user_id = query.from_user.id
     uow = _uow.DatabaseService()
     with uow:
-        task = uow.item.get(models.Task, entity_id=task_id)
+        task = uow.item.get(models.Task, user_id, task_id)
     formatter = formatters.TaskFormatter()
     await bot.send_message(
-        query.from_user.id, formatter.format(task), reply_markup=inline_done_for_task(task_id)
+        query.from_user.id, formatter.format(task),
+        reply_markup=inline_done_for_task(task_id)
     )
 
 
 async def done_task(query: types.CallbackQuery, callback_data: dict):
     await query.message.delete()
     task_id = callback_data.get('task_id')
+    user_id = query.from_user.id
     uow = _uow.DatabaseService()
     with uow:
-        task = uow.item.get(models.Task, task_id)
+        task = uow.item.get(models.Task, user_id, task_id)
         d_task = models.DoneTask(**asdict(task))
         uow.item.done(d_task)
         uow.item.delete(task)

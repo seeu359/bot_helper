@@ -103,8 +103,9 @@ async def get_notes(callback_query: types.CallbackQuery, state: FSMContext, call
 async def get_note_info(callback_query: types.CallbackQuery, state: FSMContext, callback_data: dict):
     note_id = callback_data.get('note_id')
     uow = _uow.DatabaseService()
+    user_id = callback_query.from_user.id
     with uow:
-        note = uow.item.get(models.Note, note_id)
+        note = uow.item.get(models.Note, user_id, note_id)
     formatter = formatters.NoteFormatter()
     await callback_query.message.answer(formatter.format(note))
     await state.finish()

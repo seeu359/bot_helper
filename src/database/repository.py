@@ -16,8 +16,8 @@ class AbstractRepository(ABC):
     def get_list(self, model, user_id: int, period: date | None = None):
         return self._get_list(model, user_id, period)
 
-    def get(self, model: Type[models.Entity], entity_id: int):
-        return self._get(model, entity_id)
+    def get(self, model, user_id: int, entity_id: int | None = None):
+        return self._get(model, user_id, entity_id)
 
     def add(self, entity):
         self._add(entity)
@@ -35,7 +35,7 @@ class AbstractRepository(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def _get(self, model, entity_id: int):
+    def _get(self, model, user_id: int, entity_id: int | None):
         raise NotImplementedError
 
     @abstractmethod
@@ -62,10 +62,16 @@ class SqlAlchemyRepository(AbstractRepository):
         entities = self.session.scalars(query).all()
         return entities
 
-    def _get(
-            self, entity: Type[models.Entity], entity_id: int
-    ) -> Union[models.Task, models.Entity]:
-        query = select(entity).where(entity.id == entity_id)
+    def _get(self, entity, user_id: int, entity_id: int | None):
+        if entity_id is None:
+            query = select(entity).where(
+                entity.id == user_id,
+            )
+        else:
+            query = select(entity).where(
+                entity.id == entity_id,
+                entity.user_id == user_id
+            )
         entity = self.session.scalar(query)
         return entity
 
