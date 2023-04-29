@@ -1,21 +1,19 @@
 from dataclasses import dataclass, field
 from datetime import date, datetime
-from typing import Any
+from typing import Any, TypeVar, Iterable
 from abc import ABC
 
+
 EntityProperties = Any
+TypeTask = TypeVar('TypeTask')
 
 
 class Entity(ABC):
     id: EntityProperties
 
-    @classmethod
-    def _get_cls_name(cls):
-        return cls.__name__
-
     def __repr__(self):
         fields = [f'{key}={value}' for key, value in self.__dict__.items()]
-        return f'{self._get_cls_name()}({", ".join(fields)})'
+        return f'{self.__name__}({", ".join(fields)})'
 
 
 @dataclass
@@ -32,6 +30,14 @@ class Task(Entity):
                 return date.today()
             case _:
                 return
+
+    @staticmethod
+    def get_expired_tasks(tasks: Iterable[TypeTask]) -> list[TypeTask]:
+        return [task for task in tasks if task.is_expired()]
+
+    @staticmethod
+    def get_valid_tasks(tasks: Iterable[TypeTask]) -> list[TypeTask]:
+        return [task for task in tasks if not task.is_expired()]
 
     def is_expired(self):
         return date.today() > self.start_date

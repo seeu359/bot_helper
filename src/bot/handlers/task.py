@@ -89,7 +89,7 @@ async def add_task(message: types.Message, state: FSMContext):
         uow.item.add(task)
         uow.commit()
     await state.finish()
-    await message.reply(
+    await message.answer(
         'Task successfully added', reply_markup=ReplyKeyboardRemove()
     )
 
@@ -114,19 +114,21 @@ async def get_tasks(message: types.Message, state: FSMContext):
     with uow:
         if period is None:
             _tasks = uow.item.get_list(
-                models.Task, user_id=message.from_user.id
+                models.Task,
+                user_id=message.from_user.id,
             )
+            expired_task = models.Task.get_expired_tasks(_tasks)
+            valid_task = models.Task.get_valid_tasks(_tasks)
+            await message.answer(text='Expired task', reply_markup=get_inline_for_tasks(expired_task))
+            await message.answer(text='Tasks', reply_markup=get_inline_for_tasks(valid_task))
         else:
             logger.info(f'Get task for date {period.day}')
             _tasks = uow.item.get_list(
-                models.Task, user_id=message.from_user.id, period=period
+                models.Task,
+                user_id=message.from_user.id,
+                period=period,
             )
-
-    output = 'You\'re have no tasks' if len(_tasks) == 0 else 'Your Task'
     await state.finish()
-    await message.answer(
-        text=output, reply_markup=get_inline_for_tasks(_tasks)
-    )
 
 
 async def get_task_info(query: types.CallbackQuery, callback_data: dict):
