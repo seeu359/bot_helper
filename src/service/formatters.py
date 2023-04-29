@@ -49,7 +49,7 @@ class TaskFormatter(Presenter):
 
 class NoteFormatter(Presenter):
 
-    def _format_all(self, objects: Iterable[models.Entity]):
+    def _format_all(self, notes: Iterable[models.Entity]):
         pass
 
     def _format(self, note: models.Note):

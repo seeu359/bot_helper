@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import date, datetime
 from typing import Any
 from abc import ABC
@@ -14,7 +14,7 @@ class Entity(ABC):
         return cls.__name__
 
     def __repr__(self):
-        fields = [f'{items[0]}={items[1]}' for items in self.__dict__.items()]
+        fields = [f'{key}={value}' for key, value in self.__dict__.items()]
         return f'{self._get_cls_name()}({", ".join(fields)})'
 
 
@@ -33,8 +33,8 @@ class Task(Entity):
             case _:
                 return
 
-    def is_expired(self, exp_date: date):
-        return exp_date > self.start_date
+    def is_expired(self):
+        return date.today() > self.start_date
 
     def __repr__(self):
         return super().__repr__()
@@ -50,10 +50,10 @@ class DoneTask(Task):
 
 @dataclass
 class User(Entity):
-    username: str
-    first_name: str
-    last_name: str
-    id: int | None = None
+    username: str = field(compare=False)
+    first_name: str = field(compare=False)
+    last_name: str = field(compare=False)
+    id: int | None = field(compare=True, default=None)
 
 
 @dataclass
