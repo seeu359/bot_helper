@@ -50,7 +50,7 @@ task_done_cb_data = CallbackData('dcb', 'task_id')
 
 
 def get_inline_for_tasks(tasks) -> InlineKeyboardMarkup:
-    buttons = list()
+    buttons = []
     for index, task in enumerate(tasks):
         text = f'{index + 1}) {task.start_date}, {task.title}'
         buttons.append(

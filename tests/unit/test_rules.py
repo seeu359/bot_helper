@@ -1,5 +1,5 @@
 import pytest
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 
 from src.domain import bussines_rules, exceptions, models
 
@@ -57,3 +57,16 @@ def test_get_expired_task():
     assert len(expired_tasks) == 2
     assert 1 in expired_tasks_id and 2 in expired_tasks_id
     assert 0 not in expired_tasks_id
+
+
+@pytest.mark.parametrize('premium, expected',
+                         [
+                             (True, 3250),
+                             (False, 2250),
+                         ]
+                         )
+def test_get_algo_course_salary(premium, expected):
+    algo_course = models.AlgoCourse(
+        datetime=datetime.today(), premium=premium, user_id=1, course_id=1
+    )
+    assert algo_course.get_course_salary() == expected

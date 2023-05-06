@@ -4,6 +4,11 @@ from typing import Any, TypeVar, Iterable
 from abc import ABC
 
 
+ALGO_SALARY_PER_LESSON = 750
+ALGO_COUNT_LESSON_IN_COURSE = 3
+ALGO_PREMIUM = 1000
+
+
 EntityProperties = Any
 TypeTask = TypeVar('TypeTask')
 
@@ -73,4 +78,22 @@ class Note(Entity):
 @dataclass
 class NoteCategory(Entity):
     user_id: int
+    name: str
+
+
+@dataclass
+class AlgoCourse(Entity):
+    user_id: int
+    course_id: id
+    datetime: datetime
+    premium: bool
+    course_fee: int = ALGO_COUNT_LESSON_IN_COURSE * ALGO_SALARY_PER_LESSON
+
+    def get_course_salary(self):
+        premium = ALGO_PREMIUM if self.premium else 0
+        return self.course_fee + premium
+
+
+@dataclass
+class Course(Entity):
     name: str

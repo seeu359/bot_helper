@@ -1,6 +1,8 @@
 import datetime
 
-from sqlalchemy import (Column, Date, DateTime, ForeignKey, Integer, MetaData, String,
+from sqlalchemy import (Column, Date, DateTime,
+                        ForeignKey, Integer, MetaData,
+                        String, DECIMAL, Boolean,
                         Table)
 from sqlalchemy.orm import registry, relationship
 from src.domain import models
@@ -61,8 +63,29 @@ note = Table(
 )
 
 
+algo_course = Table(
+    'algo_course',
+    metadata,
+    Column('id', Integer, primary_key=True, autoincrement=True),
+    Column('user_id', Integer, ForeignKey('user.id')),
+    Column('course_id', Integer, ForeignKey('course.id')),
+    Column('datetime', DateTime, nullable=False),
+    Column('course_fee', DECIMAL, nullable=False, default=2250),
+    Column('premium', Boolean, nullable=False),
+)
+
+
+course = Table(
+    'course',
+    metadata,
+    Column('id', Integer, primary_key=True, autoincrement=True),
+    Column('name', String, nullable=False),
+)
+
+
 def start_mapping():
     user_mapper = mapper.map_imperatively(models.User, user)
+    course_mapper = mapper.map_imperatively(models.Course, course)
     note_category_mapper = mapper.map_imperatively(
         models.NoteCategory, note_category, properties={
             'user': relationship(user_mapper)
@@ -77,4 +100,8 @@ def start_mapping():
     })
     mapper.map_imperatively(models.Task, task, properties={
         'user': relationship(user_mapper),
+    })
+    mapper.map_imperatively(models.AlgoCourse, algo_course, properties={
+        'user': relationship(user_mapper),
+        'course': relationship(course_mapper),
     })
