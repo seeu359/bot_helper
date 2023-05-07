@@ -3,6 +3,8 @@ from datetime import date, datetime
 from typing import Any, TypeVar, Iterable
 from abc import ABC
 
+from src.domain.exceptions import InvalidCourse
+
 
 ALGO_SALARY_PER_LESSON = 750
 ALGO_COUNT_LESSON_IN_COURSE = 3
@@ -97,3 +99,14 @@ class AlgoCourse(Entity):
 @dataclass
 class Course(Entity):
     name: str
+
+    def __call__(self):
+        __id = None
+        if self.name.lower() == 'python start':
+            __id = 1
+        elif self.name.lower() == 'python pro':
+            __id = 2
+        else:
+            message = InvalidCourse.error_message
+            raise InvalidCourse(message)
+        return __id

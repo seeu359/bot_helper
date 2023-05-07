@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Iterable, Type, Union
+from typing import Iterable, Union
 from datetime import date
 
 from sqlalchemy import select

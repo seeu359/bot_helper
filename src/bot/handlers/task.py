@@ -7,8 +7,9 @@ from loguru import logger
 
 from src.bot.events import task as task_events
 from src.bot import bot
-from src.service import formatters
-from src.domain import bussines_rules, models
+from src.service import formatters as serv_formatters
+from src.domain import models
+from src.database import formatters as db_formatters
 from src.service import uow as _uow
 from src.bot.keybords.task import (
     get_action,
@@ -66,10 +67,11 @@ async def add_task(message: types.Message, state: FSMContext):
     await state.update_data(month=message.text)
     data = await state.get_data()
     data['user_id'] = message.from_user.id
-    date = bussines_rules.format_day(
-        int(data.get('month_day')), data.get('month')
+    date = db_formatters.date_or_datetime(
+        data.get('month_day'),
+        data.get('month'),
     )
-    data['start_date'] = date
+    data['start_date'] = date()
     data.pop('month')
     data.pop('month_day')
 
@@ -138,7 +140,7 @@ async def get_task_info(query: types.CallbackQuery, callback_data: dict):
     uow = _uow.DatabaseService()
     with uow:
         task = uow.item.get(models.Task, user_id, task_id)
-    formatter = formatters.TaskFormatter()
+    formatter = serv_formatters.TaskFormatter()
     await bot.send_message(
         query.from_user.id, formatter.format(task),
         reply_markup=inline_done_for_task(task_id)

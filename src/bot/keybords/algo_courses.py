@@ -17,11 +17,14 @@ def get_action() -> InlineKeyboardMarkup:
 python_course_cb_data = CallbackData('pccd', 'course')
 
 
-# def get_course() -> InlineKeyboardMarkup:
-#
-#
-#     keyboard = InlineKeyboardMarkup(
-#         resize_keyboard=True, one_time_keyboard=True
-#     )
-#     keyboard.add(python_pro).add(python_start)
-#     return keyboard
+def get_course() -> InlineKeyboardMarkup:
+    buttons = ['Python Start', 'Python Pro']
+    keyboard = InlineKeyboardMarkup(
+        resize_keyboard=True, one_time_keyboard=True
+    )
+    for button in [
+        InlineKeyboardButton(text=button, callback_data=python_course_cb_data.new(course=button.lower()))
+        for button in buttons
+    ]:
+        keyboard.add(button)
+    return keyboard
