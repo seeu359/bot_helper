@@ -70,7 +70,6 @@ algo_course = Table(
     Column('user_id', Integer, ForeignKey('user.id')),
     Column('course_id', Integer, ForeignKey('course.id')),
     Column('datetime', DateTime, nullable=False),
-    Column('course_fee', DECIMAL, nullable=False, default=2250),
     Column('premium', Boolean, nullable=False),
 )
 

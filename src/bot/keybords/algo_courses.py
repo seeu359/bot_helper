@@ -15,6 +15,7 @@ def get_action() -> InlineKeyboardMarkup:
 
 
 python_course_cb_data = CallbackData('pccd', 'course')
+python_premium_cb_data = CallbackData('ppcd', 'premium')
 
 
 def get_course() -> InlineKeyboardMarkup:
@@ -27,4 +28,18 @@ def get_course() -> InlineKeyboardMarkup:
         for button in buttons
     ]:
         keyboard.add(button)
+    return keyboard
+
+
+def get_premium() -> InlineKeyboardMarkup:
+    keyboard = InlineKeyboardMarkup(
+        resize_keyboard=True, one_time_keyboard=True
+    )
+    true = InlineKeyboardButton(
+        text='Yes', callback_data=python_premium_cb_data.new(premium=True)
+    )
+    false = InlineKeyboardButton(
+        text='No', callback_data=python_premium_cb_data.new(premium=False)
+    )
+    keyboard.add(true).add(false)
     return keyboard

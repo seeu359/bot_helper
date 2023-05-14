@@ -2,6 +2,7 @@ import pytest
 from datetime import date, datetime, timedelta
 
 from src.domain import models
+from src.domain.business_layer.algo_courses import AlgoCourseData
 
 
 def test_equal_user():
@@ -49,4 +50,5 @@ def test_get_algo_course_salary(premium, expected):
     algo_course = models.AlgoCourse(
         datetime=datetime.today(), premium=premium, user_id=1, course_id=1
     )
-    assert algo_course.get_course_salary() == expected
+    course_data = AlgoCourseData(algo_course=algo_course)
+    assert course_data.salary() == expected
